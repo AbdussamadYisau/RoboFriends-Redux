@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {Provider} from 'react-redux';
+import {createStore} from 'redux';
+import {searchRobots} from './Reducers';
 import './index.css';
 import App from './Containers/App';
 
@@ -7,10 +10,14 @@ import App from './Containers/App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 
+//  Creating a Redux Store 
+const store = createStore(searchRobots);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App/>
+    <Provider store = {store}>
+      <App/>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

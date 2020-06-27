@@ -1,35 +1,48 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import CardList from '../Components/CardList';
 import SearchBox from '../Components/SearchBox';
 import Scroll from '../Components/Scroll';
 import ErrorBoundary from '../Components/ErrorBoundary';
 import './App.css';
 
+import { setSearchField} from '../Actions';
+import {searchRobots} from '../Reducers';
 
+
+
+const mapStateToProps = state => {
+    return {
+        searchField: searchRobots(state.searchField)
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return{
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+    }
+}
 class App extends Component {
     constructor() {
         super()
         this.state = {
-            robots:[],
-            searchfield:''
+            robots:[]
         }
     }
 
     componentDidMount() {
+        
         fetch('https://jsonplaceholder.typicode.com/users')
           .then(response=> response.json())
           .then(users => {this.setState({ robots: users})});
       }
-
-    onSearchChange = (event) => {
-        this.setState({searchfield: event.target.value})
-    }
     
     render(){
-        const {robots, searchfield} = this.state;
+        const {robots} = this.state;
+        const {searchField, onSearchChange } = this.props;
         
         const filteredRobots = robots.filter(robot => {
-            return robot.name.toLowerCase().includes(searchfield.toLowerCase())
+            return robot.name.toLowerCase().includes(searchField.toLowerCase())
         })
 
         // Ternary operator, which handles when the page is loading and when it has loaded
@@ -39,7 +52,7 @@ class App extends Component {
             (
                 <div className="text-center">
                     <h1 style = {{marginTop:'10px'}}>RoboFriends</h1>
-                    <SearchBox searchChange = {this.onSearchChange}/>
+                    <SearchBox searchChange = {onSearchChange}/>
                     <Scroll>
                         <ErrorBoundary>
                             <CardList robots={filteredRobots}/>
@@ -51,4 +64,4 @@ class App extends Component {
     }
 
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
